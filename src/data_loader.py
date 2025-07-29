@@ -1,3 +1,10 @@
+def get_sp_data():
+    import pandas as pd
+    url = f"https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    tables=pd.read_html(url)
+    return tables[0]
+
+
 def download_and_save_prices(
     tickers: list,
     start_date: str,
@@ -11,10 +18,11 @@ def download_and_save_prices(
 
     # Navigate up from src/ to project root, then into Data/Raw/
     root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    save_path = os.path.join(root_path, 'Data', 'Raw')
+    save_path = os.path.join(root_path, 'Data')
     os.makedirs(save_path, exist_ok=True)
 
-    data = yf.download(tickers, start=start_date, end=end_date)
+    raw_data = yf.download(tickers, start=start_date, end=end_date, auto_adjust=False)
+    data=raw_data['Adj Close']
     file_path = os.path.join(save_path, f"{filename}.{file_format}")
 
     if file_format == 'parquet':
